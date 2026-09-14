@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL 16 Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: sports_center_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sports_center_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgrespassword}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/main/resources/db/migration/V1__init_sports_center_schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-sports_center_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sports_center_net
+
+  # 2. Spring Boot 3 Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sports_center_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-sports_center_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-postgrespassword}
+      SPRING_JPA_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+      JWT_SECRET: ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    networks:
+      - sports_center_net
+
+  # 3. React Frontend (Vite + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sports_center_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+      - "80:80"
+    networks:
+      - sports_center_net
+
+  # 4. pgAdmin 4 (Database Management UI)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: sports_center_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@sportcenter.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-Admin@123456}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      - postgres
+    networks:
+      - sports_center_net
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  sports_center_net:
+    driver: bridge
