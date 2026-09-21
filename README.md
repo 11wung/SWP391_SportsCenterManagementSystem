@@ -3,8 +3,9 @@
 Hệ thống Quản lý Trung tâm Thể thao Đa năng được thiết kế theo kiến trúc chuẩn Doanh nghiệp với Monorepo phân tách `backend/` và `frontend/`.
 
 > 📘 **TÀI LIỆU HƯỚNG DẪN DÀNH CHO SINH VIÊN & THÀNH VIÊN MỚI:**
-> - 🚀 **[Hướng Dẫn Cài Đặt & Khởi Chạy Hệ Thống (Local & Docker)](HUONG_DAN_CAI_DAT_VA_CHAY.md)**: Hướng dẫn chạy 1 click bằng Docker nếu máy lỗi môi trường, hoặc chạy Local với H2 Database / PostgreSQL.
+> - 📋 **[Đặc Tả Nghiệp Vụ Hệ Thống (Business Requirements)](NGHIEP_VU_HE_THONG.md)**: Chi tiết 8 phân hệ nghiệp vụ, đối tượng người dùng, ma trận phân quyền RBAC, sơ đồ vòng đời dữ liệu và quy tắc ràng buộc.
 > - 🛠️ **[Hướng Dẫn Viết Code Module Mới (Từ A đến Z)](HUONG_DAN_VIET_MODULE_MOI.md)**: Quy trình 10 bước chuẩn mực (từ Entity, DTO, Repository, Specification, Service, Controller tới React UI), các lỗi hay gặp và checklist trước khi tạo PR.
+> - 🚀 **[Hướng Dẫn Cài Đặt & Khởi Chạy Hệ Thống (Local & Docker)](HUONG_DAN_CAI_DAT_VA_CHAY.md)**: Hướng dẫn chạy 1 click bằng Docker nếu máy lỗi môi trường, hoặc chạy Local với H2 Database / PostgreSQL.
 
 ---
 
